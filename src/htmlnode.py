@@ -28,6 +28,9 @@ class HTMLNode:
     def props_to_html(self):
 
         html = ""
+        
+        if (self.props == None):
+            return html 
 
         for key, value in self.props.items():
             prop = f' {key}="{value}"'
