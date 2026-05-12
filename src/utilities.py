@@ -52,10 +52,95 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
 
     return new_nodes
 
+import re
+
+def split_nodes_image(old_nodes):
+
+    new_nodes = []
+
+    for node in old_nodes:
+
+        if node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+
+        text = node.text
+
+        matches = extract_markdown_images(text)
+
+        if not matches:
+            new_nodes.append(node)
+            continue
+
+        remaining = text
+
+        for alt, url in matches:
+
+            markdown = f"![{alt}]({url})"
+
+            parts = remaining.split(markdown, 1)
+
+            if parts[0] != "":
+                new_nodes.append(TextNode(parts[0], TextType.TEXT))
+
+            new_nodes.append(
+                TextNode(alt, TextType.IMAGE, url)
+            )
+
+            remaining = parts[1]
+
+        if remaining != "":
+            new_nodes.append(TextNode(remaining, TextType.TEXT))
+
+    return new_nodes
+
+def split_nodes_link(old_nodes):
+
+    new_nodes = []
+
+    for node in old_nodes:
+
+        if node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+
+        text = node.text
+
+        matches = extract_markdown_links(text)
+
+        if not matches:
+            new_nodes.append(node)
+            continue
+
+        remaining = text
+
+        for link_text, url in matches:
+
+            markdown = f"[{link_text}]({url})"
+
+            parts = remaining.split(markdown, 1)
+
+            if parts[0] != "":
+                new_nodes.append(
+                    TextNode(parts[0], TextType.TEXT)
+                )
+
+            new_nodes.append(
+                TextNode(link_text, TextType.LINK, url)
+            )
+
+            remaining = parts[1]
+
+        if remaining != "":
+            new_nodes.append(
+                TextNode(remaining, TextType.TEXT)
+            )
+
+    return new_nodes
+
 def extract_markdown_images(text):
 
     return re.findall(r"!\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
-
 
 def extract_markdown_links(text):
     
