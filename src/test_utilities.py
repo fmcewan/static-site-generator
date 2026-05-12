@@ -1,6 +1,6 @@
 import unittest 
 
-from utilities import text_node_to_html_node, split_nodes_delimiter
+from utilities import text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, extract_markdown_links
 from textnode import TextNode, TextType
 
 
@@ -107,6 +107,22 @@ class TestUtilities(unittest.TestCase):
         ] 
 
         self.assertEqual(new_nodes, correct_new_nodes)
+
+    # Image and link tests 
+
+    def test_markdown_images(self):
+        
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        images = extract_markdown_images(text)
+
+        self.assertListEqual([("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")], images)
+
+    def test_markdown_links(self):
+        
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        links = extract_markdown_links(text)
+        
+        self.assertListEqual([("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")], links)
  
 
 if __name__ == "__main__":
