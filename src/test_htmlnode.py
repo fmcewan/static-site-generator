@@ -30,7 +30,5 @@ class TestHTMLNode(unittest.TestCase):
 
         self.assertEqual(html, correct_html)
 
-
-
 if __name__ == "__main__":
     unittest.main()
